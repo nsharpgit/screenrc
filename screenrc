@@ -1,0 +1,51 @@
+# helpful webpage : http://gentoo-wiki.com/TIP_Using_screen
+# http://www.delorie.com/gnu/docs/screen/screen_toc.html
+###############################################################################
+startup_message off
+vbell off
+term xterm
+# Do not use xterms alternate window buffer (add lines to scrollback bfr)
+termcapinfo xterm|xterms|xs ti=\E7\E[?47l
+defscrollback 100000
+scrollback 100000
+# Stops annoying wtmpx problem on solaris
+deflogin off
+# Use 'ctrl-o' as the command key
+escape ^oo
+# Grab the contents of .bashrc , incase I want to use it on another server
+# (to paste the file to <stdin> , use :paste b )
+readreg b /home/user/.bashrc-screen
+hardstatus alwayslastline
+#hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{G}(%{W}%n*%f%t%?(%u)%?%{G})%{w}%?%+Lw%?%?%= %{g}][%{W} %d/%m %{W}%c %{g}]'
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-w%?%{G}(%{W}%n*%t%?(%u)%?%{G})%{w}%?%+w%?%?%= %{g}][%{W} %d/%m %{W}%c %{g}]'
+shelltitle ""
+ignorecase on
+# Logging
+deflog on
+logfile 'log/%t_%y%m%d.log'
+# Bind 'u' to copy mode
+bind 'u' copy
+#Root pass
+register p password\015
+bind 'p' paste p
+
+#########################################
+# Notes
+#########################################
+## copying  a string to a buffer:
+## register a "w\015" ( then , :paste a runs 'w' )
+## pasting buffer x to all windows: :at \# paste x
+## or ,from a control window : 'while true;do screen -X at \# paste x;sleep 300;done'
+#
+## following inserts the shift key - testing only
+##register x "\017"
+## following inserts the space key - useful for keeping windows alive using the while loop above
+#register x "\040"
+#
+## Grab the contents of .bashrc , incase I want to use it on another server
+## (to paste the file to <stdin> , use :paste b )
+#register w "w|awk '/\^n/ {print \$1\" /etc/passwd\" }'|sort -u | xargs -n 2 grep\015"
+#register z "alias zl='zfs list -o name,mountpoint,mounted,canmount -r'\015"
+register l "export LS_COLORS=`echo \$LS_COLORS| sed 's/01;34/01;33/g'`\015"
+
+
