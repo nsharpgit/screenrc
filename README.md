@@ -1,0 +1,2 @@
+# screenrc
+Screen configuration file
