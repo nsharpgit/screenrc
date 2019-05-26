@@ -1,0 +1,72 @@
+ # cat ~/scripts/screensplit.sh
+#!/bin/bash
+export myhost=$1
+
+#choose config file. Default to 4.
+splitnum=${2:-4}
+
+#choose OS
+if $HOME/scripts/mysql/netdb_query.pl $myhost |egrep -si linux;then
+        export os=linux
+else
+        export os=solaris
+fi
+
+$HOME/software/screen/bin/screen -O -c $HOME/.screenrc-split${splitnum}
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+ # cat .screenrc-split4
+source $HOME/.screenrc 
+source $HOME/.screenrc-${os} ----------------references a separate file that contains commands to bind to register 1 -> 4 (see below)
+
+#############################################
+# layout settings
+############################################
+
+# bind the ` character to changing layout. 
+bind '`' layout next
+
+# Create a new 4-region layout , using vertical and horizontal splits
+layout new
+split -v
+split
+focus
+focus
+split
+focus
+focus
+
+########
+# login to a different host in each region
+##########
+screen -t $myhost ssh $myhost 
+paste 1
+focus
+screen -t $myhost ssh $myhost
+paste 2
+focus
+screen -t $myhost ssh $myhost
+paste 3
+focus
+screen -t $myhost ssh $myhost
+paste 4
+focus
+
+# Create a new one region layout,move to the first window, then switch back to the original multi-region layout
+layout new
+next
+layout next
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+ # cat .screenrc-solaris 
+register 1 "prstat -Z\015"
+register 2 "sar -g 5 500\015"
+register 3 "vmstat 5\015"
+register 4 "iostat -xnmz 5\015"
+
+
